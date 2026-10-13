@@ -8,6 +8,10 @@ let redisClient: Redis | null = null;
  * This is optional — the app works without Redis.
  */
 export const getRedisClient = (): Redis | null => {
+  // Redis commented out for now — running directly without cache
+  return null;
+
+  /*
   if (!env.REDIS_URL) {
     return null;
   }
@@ -23,6 +27,7 @@ export const getRedisClient = (): Redis | null => {
   }
 
   return redisClient;
+  */
 };
 
 /**

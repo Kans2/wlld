@@ -8,13 +8,13 @@ const startServer = async (): Promise<void> => {
     // Connect to MongoDB
     await connectDB();
 
-    // Optionally connect to Redis
-    const redis = getRedisClient();
-    if (redis) {
-      await redis.connect().catch(() => {
-        console.warn('⚠️ Redis connection failed — running without cache');
-      });
-    }
+    // Optionally connect to Redis (commented out for now)
+    // const redis = getRedisClient();
+    // if (redis) {
+    //   await redis.connect().catch(() => {
+    //     console.warn('⚠️ Redis connection failed — running without cache');
+    //   });
+    // }
 
     // Start Express server
     const port = parseInt(env.PORT, 10);

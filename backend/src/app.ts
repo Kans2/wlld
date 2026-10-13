@@ -12,9 +12,37 @@ const app = express();
 
 // ─── Security & Parsing ─────────────────────────────────────────
 app.use(helmet());
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+];
+
+if (env.FRONTEND_URL) {
+  env.FRONTEND_URL.split(',').forEach((url) => {
+    const cleaned = url.trim().replace(/\/+$/, '');
+    if (cleaned) allowedOrigins.push(cleaned);
+  });
+}
+
 app.use(
   cors({
-    origin: env.FRONTEND_URL || true,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+      if (!origin) return callback(null, true);
+
+      // Explicit match
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Allow any Vercel preview or production deployments (*.vercel.app)
+      if (origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+
+      return callback(null, false);
+    },
     credentials: true,
   })
 );
