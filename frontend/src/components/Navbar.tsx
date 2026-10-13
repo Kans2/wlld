@@ -1,12 +1,13 @@
 'use client';
 
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { Sparkles, LayoutDashboard, PlusCircle, Compass, LogOut, User } from 'lucide-react';
 import styles from './Navbar.module.css';
 
-export default function Navbar() {
+function NavbarContent() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -87,5 +88,13 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
+  );
+}
+
+export default function Navbar() {
+  return (
+    <Suspense fallback={null}>
+      <NavbarContent />
+    </Suspense>
   );
 }

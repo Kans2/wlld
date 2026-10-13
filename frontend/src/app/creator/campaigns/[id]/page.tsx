@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
@@ -13,13 +13,9 @@ import { ArrowLeft, CheckCircle2, Target, Send } from 'lucide-react';
 import { Instagram, Youtube } from '@/components/icons';
 import styles from './submit.module.css';
 
-export default function CreatorCampaignDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const resolvedParams = use(params);
-  const campaignId = resolvedParams.id;
+function CreatorCampaignDetailContent() {
+  const params = useParams();
+  const campaignId = (params?.id as string) || '';
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
@@ -32,6 +28,7 @@ export default function CreatorCampaignDetailPage({
   const [success, setSuccess] = useState<string | null>(null);
 
   const fetchData = async () => {
+    if (!campaignId) return;
     try {
       setLoading(true);
       setError(null);
@@ -240,5 +237,22 @@ export default function CreatorCampaignDetailPage({
         </div>
       </main>
     </div>
+  );
+}
+
+export default function CreatorCampaignDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className={styles.page}>
+          <div className={styles.loadingBox}>
+            <div className="spinner" />
+            <p>Loading campaign...</p>
+          </div>
+        </div>
+      }
+    >
+      <CreatorCampaignDetailContent />
+    </Suspense>
   );
 }
