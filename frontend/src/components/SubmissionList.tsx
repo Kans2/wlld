@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Submission } from '@/types';
 import { api } from '@/lib/api';
+import { ExternalLink, AlertTriangle, Trophy, Zap, Inbox, Loader2 } from 'lucide-react';
 import styles from './SubmissionList.module.css';
 
 interface SubmissionListProps {
@@ -40,15 +41,23 @@ export default function SubmissionList({
   if (!submissions || submissions.length === 0) {
     return (
       <div className={styles.emptyState}>
-        <div className={styles.emptyIcon}>📭</div>
-        <p>No submissions yet.</p>
+        <div className={styles.emptyIconWrap}>
+          <Inbox size={36} className={styles.emptyIcon} />
+        </div>
+        <h3 className={styles.emptyTitle}>No submissions yet</h3>
+        <p className={styles.emptyText}>Submissions and milestone tracking will appear here once submitted.</p>
       </div>
     );
   }
 
   return (
     <div className={styles.container}>
-      {errorMsg && <div className="error-message">{errorMsg}</div>}
+      {errorMsg && (
+        <div className="error-message">
+          <AlertTriangle size={16} />
+          <span>{errorMsg}</span>
+        </div>
+      )}
 
       {submissions.map((sub) => {
         const milestoneIndex = sub.currentMilestoneIndex;
@@ -67,11 +76,12 @@ export default function SubmissionList({
                   rel="noopener noreferrer"
                   className={styles.postLink}
                 >
-                  🔗 {sub.postLink}
+                  <span>{sub.postLink}</span>
+                  <ExternalLink size={13} className={styles.linkIcon} />
                 </a>
                 <div className={styles.postMeta}>
                   <span className={styles.platformTag}>
-                    {sub.platform === 'instagram' ? '📸' : '🎬'} {sub.platform}
+                    {sub.platform}
                   </span>
                   <span>•</span>
                   <span>Creator: {sub.creator?.name || 'Anonymous'}</span>
@@ -83,13 +93,17 @@ export default function SubmissionList({
               <div className={styles.badges}>
                 {sub.flagged && (
                   <span className={styles.spikeBadge} title="Spike Detection Triggered: Views grew unusually fast!">
-                    ⚠️ Spike Detected
+                    <AlertTriangle size={12} />
+                    <span>Spike Detected</span>
                   </span>
                 )}
                 <span className={styles.milestoneBadge}>
-                  {currentMilestone
-                    ? `Tier ${milestoneIndex + 1}: ${currentMilestone.views.toLocaleString()} views`
-                    : 'Tier 0: No milestone reached'}
+                  <Trophy size={12} />
+                  <span>
+                    {currentMilestone
+                      ? `Tier ${milestoneIndex + 1}: ${currentMilestone.views.toLocaleString()} views`
+                      : 'Tier 0: No milestone reached'}
+                  </span>
                 </span>
               </div>
             </div>
@@ -120,8 +134,16 @@ export default function SubmissionList({
             {showSimulator && (
               <div className={styles.simulatorBox}>
                 <div className={styles.simHeader}>
-                  <span>⚡ Platform View Simulator (Live Test)</span>
-                  <span>{updatingId === sub._id ? 'Updating views & recalculating payout...' : ''}</span>
+                  <div className={styles.simTitle}>
+                    <Zap size={14} className={styles.simIcon} />
+                    <span>Platform View Simulator (Live Test)</span>
+                  </div>
+                  {updatingId === sub._id && (
+                    <div className={styles.simLoading}>
+                      <Loader2 size={13} className="animate-spin" />
+                      <span>Updating views & recalculating payout...</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className={styles.simControls}>
@@ -152,7 +174,7 @@ export default function SubmissionList({
                     title="Simulate sudden massive spike in 1 second to test Spike Detection"
                     onClick={() => handleUpdateViews(sub._id, (sub.viewCount || 0) + 250000)}
                   >
-                    🚀 Trigger Spike (+250K)
+                    Trigger Spike (+250K)
                   </button>
 
                   <div className={styles.customInputGroup}>
@@ -160,13 +182,14 @@ export default function SubmissionList({
                       type="number"
                       placeholder="Custom"
                       className={styles.customInput}
-                      value={customViews[sub._id] ?? ''}
-                      onChange={(e) =>
+                      value={customViews[sub._id] ? customViews[sub._id] : ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
                         setCustomViews({
                           ...customViews,
-                          [sub._id]: parseInt(e.target.value) || 0,
-                        })
-                      }
+                          [sub._id]: val === '' ? 0 : parseInt(val, 10) || 0,
+                        });
+                      }}
                     />
                     <button
                       className={styles.updateBtn}

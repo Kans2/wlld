@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Submission, ApiResponse } from '@/types';
+import { Submission } from '@/types';
 import Navbar from '@/components/Navbar';
 import EarningsCard from '@/components/EarningsCard';
 import SubmissionList from '@/components/SubmissionList';
+import { Compass } from 'lucide-react';
 import styles from './creator.module.css';
 
 export default function CreatorDashboard() {
@@ -79,7 +80,8 @@ export default function CreatorDashboard() {
             </div>
 
             <Link href="/creator/campaigns" className={styles.browseBtn}>
-              <span>🔍</span> Browse Campaigns
+              <Compass size={16} />
+              <span>Browse Campaigns</span>
             </Link>
           </div>
 
@@ -93,7 +95,7 @@ export default function CreatorDashboard() {
 
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Your Submissions & Earnings</h2>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            <span className={styles.sectionHint}>
               Simulate views to test milestone payouts live
             </span>
           </div>

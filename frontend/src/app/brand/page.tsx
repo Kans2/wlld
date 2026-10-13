@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Campaign, ApiResponse } from '@/types';
+import { Campaign } from '@/types';
 import Navbar from '@/components/Navbar';
 import CampaignCard from '@/components/CampaignCard';
+import { Plus, Layers, Activity, Wallet, TrendingDown, Coins, Megaphone } from 'lucide-react';
 import styles from './brand.module.css';
 
 export default function BrandDashboard() {
@@ -73,39 +74,55 @@ export default function BrandDashboard() {
             <div className={styles.titleArea}>
               <h1 className={styles.title}>Brand Dashboard</h1>
               <p className={styles.subtitle}>
-                Manage your campaigns, monitor milestones, and track real-time payouts.
+                Manage campaigns, monitor milestones, and track real-time payouts.
               </p>
             </div>
 
             <Link href="/brand/campaigns/new" className={styles.createBtn}>
-              <span>+</span> Create Campaign
+              <Plus size={16} />
+              <span>Create Campaign</span>
             </Link>
           </div>
 
           <div className={styles.statsGrid}>
             <div className={styles.statCard}>
-              <span className={styles.statCardLabel}>Total Campaigns</span>
+              <div className={styles.statCardHeader}>
+                <span className={styles.statCardLabel}>Total Campaigns</span>
+                <Layers size={15} className={styles.statIcon} />
+              </div>
               <div className={styles.statCardVal}>{campaigns.length}</div>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statCardLabel}>Active (Live)</span>
-              <div className={styles.statCardVal} style={{ color: '#4ade80' }}>
+              <div className={styles.statCardHeader}>
+                <span className={styles.statCardLabel}>Active (Live)</span>
+                <Activity size={15} className={styles.statIcon} />
+              </div>
+              <div className={`${styles.statCardVal} ${styles.valGood}`}>
                 {activeCount}
               </div>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statCardLabel}>Total Budget Allocated</span>
+              <div className={styles.statCardHeader}>
+                <span className={styles.statCardLabel}>Total Budget</span>
+                <Wallet size={15} className={styles.statIcon} />
+              </div>
               <div className={styles.statCardVal}>₹{totalBudget.toLocaleString()}</div>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statCardLabel}>Total Payouts Spent</span>
-              <div className={styles.statCardVal} style={{ color: '#fb923c' }}>
+              <div className={styles.statCardHeader}>
+                <span className={styles.statCardLabel}>Payouts Spent</span>
+                <TrendingDown size={15} className={styles.statIcon} />
+              </div>
+              <div className={`${styles.statCardVal} ${styles.valSpent}`}>
                 ₹{totalSpent.toLocaleString()}
               </div>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statCardLabel}>Remaining Budget</span>
-              <div className={styles.statCardVal} style={{ color: '#a78bfa' }}>
+              <div className={styles.statCardHeader}>
+                <span className={styles.statCardLabel}>Remaining Budget</span>
+                <Coins size={15} className={styles.statIcon} />
+              </div>
+              <div className={`${styles.statCardVal} ${styles.valBrand}`}>
                 ₹{remainingBudget.toLocaleString()}
               </div>
             </div>
@@ -124,13 +141,16 @@ export default function BrandDashboard() {
             </div>
           ) : campaigns.length === 0 ? (
             <div className={styles.emptyState}>
-              <div className={styles.emptyIcon}>📢</div>
-              <h3>No campaigns created yet</h3>
-              <p style={{ marginTop: '0.5rem', marginBottom: '1.5rem' }}>
+              <div className={styles.emptyIconWrap}>
+                <Megaphone size={36} className={styles.emptyIcon} />
+              </div>
+              <h3 className={styles.emptyTitle}>No campaigns created yet</h3>
+              <p className={styles.emptyDesc}>
                 Launch your first campaign with milestone-based payouts today!
               </p>
-              <Link href="/brand/campaigns/new" className={styles.createBtn} style={{ display: 'inline-flex' }}>
-                Launch Campaign
+              <Link href="/brand/campaigns/new" className={styles.createBtn}>
+                <Plus size={16} />
+                <span>Launch Campaign</span>
               </Link>
             </div>
           ) : (
@@ -140,7 +160,7 @@ export default function BrandDashboard() {
                   key={camp._id}
                   campaign={camp}
                   showBudget={true}
-                  actionLabel="View Details & Submissions →"
+                  actionLabel="View Details & Submissions"
                   onAction={() => router.push(`/brand/campaigns/${camp._id}`)}
                   onClick={() => router.push(`/brand/campaigns/${camp._id}`)}
                 />

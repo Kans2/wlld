@@ -83,9 +83,8 @@ const submissionSchema = new Schema<ISubmission>(
 // Compound index: one submission per creator per campaign
 submissionSchema.index({ creator: 1, campaign: 1 }, { unique: true });
 
-// Indexes for common queries
+// Index for common queries
 submissionSchema.index({ campaign: 1, creator: 1 });
-submissionSchema.index({ creator: 1 });
 
 export const Submission = mongoose.model<ISubmission>(
   'Submission',

@@ -1,5 +1,6 @@
 'use client';
 
+import { Wallet, AlertCircle, CheckCircle2 } from 'lucide-react';
 import styles from './BudgetBar.module.css';
 
 interface BudgetBarProps {
@@ -17,10 +18,21 @@ export default function BudgetBar({ totalBudget, budgetSpent, status }: BudgetBa
     <div className={styles.budgetContainer}>
       <div className={styles.headerRow}>
         <div className={styles.title}>
-          <span>💰</span> Campaign Budget Allocation
+          <Wallet size={16} className={styles.titleIcon} />
+          <span>Campaign Budget Allocation</span>
         </div>
         <span className={`${styles.badge} ${isExhausted ? styles.badgeExhausted : styles.badgeLive}`}>
-          {isExhausted ? 'Budget Capped / Exhausted' : (status?.toUpperCase() || 'LIVE')}
+          {isExhausted ? (
+            <>
+              <AlertCircle size={12} />
+              <span>Budget Exhausted</span>
+            </>
+          ) : (
+            <>
+              <CheckCircle2 size={12} />
+              <span>{status?.toUpperCase() || 'LIVE'}</span>
+            </>
+          )}
         </span>
       </div>
 

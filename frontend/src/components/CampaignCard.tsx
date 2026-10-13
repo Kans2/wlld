@@ -1,6 +1,8 @@
 'use client';
 
 import { Campaign } from '@/types';
+import { ArrowRight } from 'lucide-react';
+import { Instagram, Youtube } from '@/components/icons';
 import styles from './CampaignCard.module.css';
 
 interface CampaignCardProps {
@@ -25,13 +27,14 @@ export default function CampaignCard({
     <div className={styles.card} onClick={onClick}>
       <div className={styles.header}>
         <div className={styles.platform_badge} data-platform={campaign.platform}>
-          {campaign.platform === 'instagram' ? '📸' : '🎬'}{' '}
-          {campaign.platform}
+          {campaign.platform === 'instagram' ? (
+            <Instagram size={13} className={styles.platform_icon} />
+          ) : (
+            <Youtube size={13} className={styles.platform_icon} />
+          )}
+          <span>{campaign.platform}</span>
         </div>
-        <span
-          className={styles.status}
-          data-status={campaign.status}
-        >
+        <span className={styles.status} data-status={campaign.status}>
           {campaign.status}
         </span>
       </div>
@@ -79,7 +82,8 @@ export default function CampaignCard({
             onAction();
           }}
         >
-          {actionLabel}
+          <span>{actionLabel}</span>
+          <ArrowRight size={14} />
         </button>
       )}
     </div>

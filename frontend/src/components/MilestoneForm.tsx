@@ -1,6 +1,7 @@
 'use client';
 
 import { Milestone } from '@/types';
+import { Target, Plus, Trash2, Sparkles } from 'lucide-react';
 import styles from './MilestoneForm.module.css';
 
 interface MilestoneFormProps {
@@ -56,9 +57,12 @@ export default function MilestoneForm({ milestones, onChange }: MilestoneFormPro
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <span className={styles.title}>🎯 Milestone Payout Ladder</span>
+        <div className={styles.title}>
+          <Target size={16} className={styles.titleIcon} />
+          <span>Milestone Payout Ladder</span>
+        </div>
         <div className={styles.presets}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', alignSelf: 'center' }}>Presets:</span>
+          <span className={styles.presetLabel}>Presets:</span>
           <button type="button" onClick={() => applyPreset('standard')} className={styles.presetBtn}>
             Standard
           </button>
@@ -79,9 +83,12 @@ export default function MilestoneForm({ milestones, onChange }: MilestoneFormPro
                 type="number"
                 min="1"
                 step="500"
-                value={m.views}
-                onChange={(e) => handleUpdate(idx, 'views', parseInt(e.target.value) || 0)}
-                placeholder="Views"
+                value={m.views === 0 ? '' : m.views}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  handleUpdate(idx, 'views', val === '' ? 0 : parseInt(val, 10) || 0);
+                }}
+                placeholder="e.g. 5000"
                 className={styles.input}
                 required
               />
@@ -93,9 +100,12 @@ export default function MilestoneForm({ milestones, onChange }: MilestoneFormPro
                 type="number"
                 min="1"
                 step="100"
-                value={m.payout}
-                onChange={(e) => handleUpdate(idx, 'payout', parseInt(e.target.value) || 0)}
-                placeholder="Payout in ₹"
+                value={m.payout === 0 ? '' : m.payout}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  handleUpdate(idx, 'payout', val === '' ? 0 : parseInt(val, 10) || 0);
+                }}
+                placeholder="e.g. 250"
                 className={styles.input}
                 required
               />
@@ -108,15 +118,16 @@ export default function MilestoneForm({ milestones, onChange }: MilestoneFormPro
                 className={styles.removeBtn}
                 title="Remove tier"
               >
-                ✕
+                <Trash2 size={15} />
               </button>
-            ) : <span />}
+            ) : <span className={styles.spacer} />}
           </div>
         ))}
       </div>
 
       <button type="button" onClick={handleAddMilestone} className={styles.addRowBtn}>
-        + Add Milestone Tier
+        <Plus size={15} />
+        <span>Add Milestone Tier</span>
       </button>
     </div>
   );

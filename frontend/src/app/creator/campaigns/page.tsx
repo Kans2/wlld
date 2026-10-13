@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Campaign, ApiResponse } from '@/types';
+import { Campaign } from '@/types';
 import Navbar from '@/components/Navbar';
 import CampaignCard from '@/components/CampaignCard';
+import { Search, Layers, Inbox } from 'lucide-react';
+import { Instagram, Youtube } from '@/components/icons';
 import styles from './browse.module.css';
 
 export default function BrowseCampaignsPage() {
@@ -67,32 +69,38 @@ export default function BrowseCampaignsPage() {
           </div>
 
           <div className={styles.filterBar}>
-            <input
-              type="text"
-              placeholder="Search campaigns by name..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={styles.searchInput}
-            />
+            <div className={styles.searchWrapper}>
+              <Search size={15} className={styles.searchIcon} />
+              <input
+                type="text"
+                placeholder="Search campaigns by name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={styles.searchInput}
+              />
+            </div>
 
             <div className={styles.platformFilters}>
               <button
                 className={`${styles.filterBtn} ${filterPlatform === 'all' ? styles.filterBtnActive : ''}`}
                 onClick={() => setFilterPlatform('all')}
               >
-                All Platforms
+                <Layers size={14} />
+                <span>All Platforms</span>
               </button>
               <button
                 className={`${styles.filterBtn} ${filterPlatform === 'instagram' ? styles.filterBtnActive : ''}`}
                 onClick={() => setFilterPlatform('instagram')}
               >
-                📸 Instagram
+                <Instagram size={14} />
+                <span>Instagram</span>
               </button>
               <button
                 className={`${styles.filterBtn} ${filterPlatform === 'youtube' ? styles.filterBtnActive : ''}`}
                 onClick={() => setFilterPlatform('youtube')}
               >
-                🎬 YouTube
+                <Youtube size={14} />
+                <span>YouTube</span>
               </button>
             </div>
           </div>
@@ -106,8 +114,11 @@ export default function BrowseCampaignsPage() {
             </div>
           ) : filteredCampaigns.length === 0 ? (
             <div className={styles.emptyState}>
-              <h3>No matching campaigns found</h3>
-              <p style={{ marginTop: '0.5rem' }}>Try clearing filters or check back later.</p>
+              <div className={styles.emptyIconWrap}>
+                <Inbox size={36} className={styles.emptyIcon} />
+              </div>
+              <h3 className={styles.emptyTitle}>No matching campaigns found</h3>
+              <p className={styles.emptyText}>Try adjusting your search or clearing filters.</p>
             </div>
           ) : (
             <div className={styles.grid}>
@@ -116,7 +127,7 @@ export default function BrowseCampaignsPage() {
                   key={c._id}
                   campaign={c}
                   showBudget={true}
-                  actionLabel="Submit Post Link →"
+                  actionLabel="Submit Post Link"
                   onAction={() => router.push(`/creator/campaigns/${c._id}`)}
                   onClick={() => router.push(`/creator/campaigns/${c._id}`)}
                 />

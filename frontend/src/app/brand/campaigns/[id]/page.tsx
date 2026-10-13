@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Campaign, Submission, ApiResponse } from '@/types';
+import { Campaign, Submission } from '@/types';
 import Navbar from '@/components/Navbar';
 import BudgetBar from '@/components/BudgetBar';
 import SubmissionList from '@/components/SubmissionList';
+import { ArrowLeft, RefreshCw, Target } from 'lucide-react';
+import { Instagram, Youtube } from '@/components/icons';
 import styles from './detail.module.css';
 
 export default function CampaignDetailPage({
@@ -80,16 +82,22 @@ export default function CampaignDetailPage({
       <main className={styles.main}>
         <div className="container">
           <Link href="/brand" className={styles.backLink}>
-            ← Back to Campaigns
+            <ArrowLeft size={16} />
+            <span>Back to Campaigns</span>
           </Link>
 
           <div className={styles.header}>
             <div className={styles.titleArea}>
               <div className={styles.tags}>
                 <span className={styles.tagPlatform}>
-                  {campaign.platform === 'instagram' ? '📸' : '🎬'} {campaign.platform}
+                  {campaign.platform === 'instagram' ? (
+                    <Instagram size={13} />
+                  ) : (
+                    <Youtube size={13} />
+                  )}
+                  <span>{campaign.platform}</span>
                 </span>
-                <span className={styles.tagPlatform} style={{ color: '#4ade80' }}>
+                <span className={`${styles.tagPlatform} ${styles.tagStatusLive}`}>
                   {campaign.status.toUpperCase()}
                 </span>
               </div>
@@ -97,7 +105,8 @@ export default function CampaignDetailPage({
             </div>
 
             <button onClick={fetchData} className={styles.refreshBtn}>
-              🔄 Refresh Data
+              <RefreshCw size={14} />
+              <span>Refresh Data</span>
             </button>
           </div>
 
@@ -113,17 +122,18 @@ export default function CampaignDetailPage({
 
             {/* Milestones Ladder */}
             <div className={styles.milestonesCard}>
-              <h2 className={styles.cardTitle}>🎯 Milestone Payout Ladder</h2>
+              <div className={styles.cardTitle}>
+                <Target size={16} className={styles.cardTitleIcon} />
+                <span>Milestone Payout Ladder</span>
+              </div>
               <div className={styles.milestoneTable}>
                 {campaign.milestones.map((m, idx) => (
                   <div key={idx} className={styles.milestoneRow}>
-                    <div>
-                      <strong style={{ color: 'var(--accent-purple)', marginRight: '0.75rem' }}>
-                        Tier {idx + 1}:
-                      </strong>
+                    <div className={styles.tierInfo}>
+                      <span className={styles.tierNumber}>Tier {idx + 1}:</span>
                       <span>{m.views.toLocaleString()} views required</span>
                     </div>
-                    <div style={{ fontWeight: 700, color: '#4ade80' }}>
+                    <div className={styles.tierPayout}>
                       ₹{m.payout.toLocaleString()}
                     </div>
                   </div>
@@ -137,7 +147,7 @@ export default function CampaignDetailPage({
                 <h2 className={styles.sectionTitle}>
                   Creator Submissions ({submissions.length})
                 </h2>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                <span className={styles.sectionSub}>
                   Use the simulator below each post to test view increases & payouts in real-time
                 </span>
               </div>

@@ -8,6 +8,8 @@ import { api } from '@/lib/api';
 import { Milestone } from '@/types';
 import Navbar from '@/components/Navbar';
 import MilestoneForm from '@/components/MilestoneForm';
+import { ArrowLeft, Rocket } from 'lucide-react';
+import { Instagram, Youtube } from '@/components/icons';
 import styles from './new.module.css';
 
 export default function NewCampaignPage() {
@@ -16,7 +18,7 @@ export default function NewCampaignPage() {
 
   const [name, setName] = useState('');
   const [platform, setPlatform] = useState<'instagram' | 'youtube'>('instagram');
-  const [totalBudget, setTotalBudget] = useState<number>(20000);
+  const [totalBudget, setTotalBudget] = useState<number | ''>(20000);
   const [milestones, setMilestones] = useState<Milestone[]>([
     { views: 5000, payout: 250 },
     { views: 10000, payout: 600 },
@@ -32,12 +34,17 @@ export default function NewCampaignPage() {
       setError('Campaign name is required');
       return;
     }
-    if (totalBudget <= 0) {
+    const numericBudget = totalBudget === '' ? 0 : totalBudget;
+    if (numericBudget <= 0) {
       setError('Total budget must be greater than 0');
       return;
     }
     if (milestones.length === 0) {
       setError('At least one milestone is required');
+      return;
+    }
+    if (milestones.some((m) => !m.views || m.views <= 0 || !m.payout || m.payout <= 0)) {
+      setError('All milestone view targets and payouts must be greater than 0');
       return;
     }
 
@@ -50,7 +57,7 @@ export default function NewCampaignPage() {
       await api.createCampaign({
         name: name.trim(),
         platform,
-        totalBudget,
+        totalBudget: numericBudget,
         milestones: sortedMilestones,
       });
       router.push('/brand');
@@ -72,7 +79,8 @@ export default function NewCampaignPage() {
       <main className={styles.main}>
         <div className="container">
           <Link href="/brand" className={styles.backLink}>
-            ← Back to Dashboard
+            <ArrowLeft size={16} />
+            <span>Back to Dashboard</span>
           </Link>
 
           <div className={styles.card}>
@@ -105,7 +113,8 @@ export default function NewCampaignPage() {
                     }`}
                     onClick={() => setPlatform('instagram')}
                   >
-                    <span>📸</span> Instagram Reels
+                    <Instagram size={18} />
+                    <span>Instagram Reels</span>
                   </div>
                   <div
                     className={`${styles.platformOption} ${
@@ -113,7 +122,8 @@ export default function NewCampaignPage() {
                     }`}
                     onClick={() => setPlatform('youtube')}
                   >
-                    <span>🎬</span> YouTube Shorts / Videos
+                    <Youtube size={18} />
+                    <span>YouTube Shorts / Videos</span>
                   </div>
                 </div>
               </div>
@@ -125,12 +135,15 @@ export default function NewCampaignPage() {
                   min="500"
                   step="500"
                   value={totalBudget}
-                  onChange={(e) => setTotalBudget(parseInt(e.target.value) || 0)}
-                  placeholder="20000"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setTotalBudget(val === '' ? '' : parseInt(val, 10) || 0);
+                  }}
+                  placeholder="e.g. 20000"
                   className={styles.input}
                   required
                 />
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                <span className={styles.hint}>
                   Total pool budget that caps payouts. Once exhausted, further milestone payouts are stopped.
                 </span>
               </div>
@@ -140,7 +153,8 @@ export default function NewCampaignPage() {
               <MilestoneForm milestones={milestones} onChange={setMilestones} />
 
               <button type="submit" disabled={loading} className={styles.submitBtn}>
-                {loading ? 'Creating Campaign...' : 'Launch Campaign 🚀'}
+                <Rocket size={16} />
+                <span>{loading ? 'Creating Campaign...' : 'Launch Campaign'}</span>
               </button>
             </form>
           </div>

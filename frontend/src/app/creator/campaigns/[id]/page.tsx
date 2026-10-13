@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Campaign, Submission, ApiResponse } from '@/types';
+import { Campaign, Submission } from '@/types';
 import Navbar from '@/components/Navbar';
 import BudgetBar from '@/components/BudgetBar';
 import SubmissionList from '@/components/SubmissionList';
+import { ArrowLeft, CheckCircle2, Target, Send } from 'lucide-react';
+import { Instagram, Youtube } from '@/components/icons';
 import styles from './submit.module.css';
 
 export default function CreatorCampaignDetailPage({
@@ -112,16 +114,22 @@ export default function CreatorCampaignDetailPage({
       <main className={styles.main}>
         <div className="container">
           <Link href="/creator/campaigns" className={styles.backLink}>
-            ← Back to Browse Campaigns
+            <ArrowLeft size={16} />
+            <span>Back to Browse Campaigns</span>
           </Link>
 
           <div className={styles.header}>
             <div className={styles.titleArea}>
               <div className={styles.tags}>
                 <span className={styles.tagPlatform}>
-                  {campaign.platform === 'instagram' ? '📸' : '🎬'} {campaign.platform}
+                  {campaign.platform === 'instagram' ? (
+                    <Instagram size={13} />
+                  ) : (
+                    <Youtube size={13} />
+                  )}
+                  <span>{campaign.platform}</span>
                 </span>
-                <span className={styles.tagPlatform} style={{ color: '#4ade80' }}>
+                <span className={`${styles.tagPlatform} ${styles.tagStatusLive}`}>
                   {campaign.status.toUpperCase()}
                 </span>
               </div>
@@ -129,7 +137,7 @@ export default function CreatorCampaignDetailPage({
             </div>
           </div>
 
-          <div style={{ marginBottom: '2rem' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
             <BudgetBar
               totalBudget={campaign.totalBudget}
               budgetSpent={campaign.budgetSpent}
@@ -143,17 +151,18 @@ export default function CreatorCampaignDetailPage({
           <div className={styles.layoutGrid}>
             {/* Milestones Ladder */}
             <div className={styles.card}>
-              <h2 className={styles.cardTitle}>🎯 Milestone Payout Ladder</h2>
+              <div className={styles.cardTitle}>
+                <Target size={16} className={styles.cardTitleIcon} />
+                <span>Milestone Payout Ladder</span>
+              </div>
               <div className={styles.milestoneTable}>
                 {campaign.milestones.map((m, idx) => (
                   <div key={idx} className={styles.milestoneRow}>
-                    <div>
-                      <strong style={{ color: 'var(--accent-purple)', marginRight: '0.75rem' }}>
-                        Tier {idx + 1}:
-                      </strong>
+                    <div className={styles.tierInfo}>
+                      <span className={styles.tierNumber}>Tier {idx + 1}:</span>
                       <span>{m.views.toLocaleString()} views</span>
                     </div>
-                    <div style={{ fontWeight: 700, color: '#4ade80' }}>
+                    <div className={styles.tierPayout}>
                       ₹{m.payout.toLocaleString()}
                     </div>
                   </div>
@@ -165,25 +174,13 @@ export default function CreatorCampaignDetailPage({
             <div className={styles.card}>
               {existingSubmission ? (
                 <div>
-                  <div
-                    style={{
-                      background: 'rgba(34, 197, 94, 0.1)',
-                      border: '1px solid rgba(34, 197, 94, 0.3)',
-                      color: '#4ade80',
-                      padding: '0.75rem 1rem',
-                      borderRadius: 'var(--radius-md)',
-                      fontWeight: 600,
-                      marginBottom: '1.25rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                    }}
-                  >
-                    <span>✅</span> You have submitted to this campaign!
+                  <div className={styles.submittedBanner}>
+                    <CheckCircle2 size={16} />
+                    <span>You have submitted to this campaign!</span>
                   </div>
 
                   <h3 className={styles.cardTitle}>Your Submission</h3>
-                  <div style={{ marginTop: '1rem' }}>
+                  <div style={{ marginTop: '0.75rem' }}>
                     <SubmissionList
                       submissions={[existingSubmission]}
                       onRefresh={fetchData}
@@ -193,8 +190,11 @@ export default function CreatorCampaignDetailPage({
                 </div>
               ) : (
                 <div>
-                  <h2 className={styles.cardTitle}>🚀 Submit Your Post Link</h2>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
+                  <div className={styles.cardTitle}>
+                    <Send size={16} className={styles.cardTitleIcon} />
+                    <span>Submit Your Post Link</span>
+                  </div>
+                  <p className={styles.cardSubtitle}>
                     Paste your {campaign.platform === 'instagram' ? 'Instagram Reel / Post' : 'YouTube Video / Short'}{' '}
                     URL. You will earn payouts as views hit each milestone.
                   </p>
@@ -223,11 +223,14 @@ export default function CreatorCampaignDetailPage({
                       disabled={submitting || campaign.status !== 'live'}
                       className={styles.submitBtn}
                     >
-                      {submitting
-                        ? 'Submitting...'
-                        : campaign.status !== 'live'
-                        ? 'Campaign Completed'
-                        : 'Submit Link & Join Campaign'}
+                      <Send size={14} />
+                      <span>
+                        {submitting
+                          ? 'Submitting...'
+                          : campaign.status !== 'live'
+                          ? 'Campaign Completed'
+                          : 'Submit Link & Join Campaign'}
+                      </span>
                     </button>
                   </form>
                 </div>
