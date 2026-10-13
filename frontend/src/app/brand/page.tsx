@@ -161,8 +161,8 @@ export default function BrandDashboard() {
                   campaign={camp}
                   showBudget={true}
                   actionLabel="View Details & Submissions"
-                  onAction={() => router.push(`/brand/campaigns/${camp._id}`)}
-                  onClick={() => router.push(`/brand/campaigns/${camp._id}`)}
+                  onAction={() => router.push(`/brand/campaigns/${camp.slug || camp._id}`)}
+                  onClick={() => router.push(`/brand/campaigns/${camp.slug || camp._id}`)}
                 />
               ))}
             </div>

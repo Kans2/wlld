@@ -28,8 +28,12 @@ interface ViewUpdateResult {
 export const createSubmission = async (
   input: CreateSubmissionInput
 ): Promise<ISubmission> => {
-  // Verify campaign exists and is live
-  const campaign = await Campaign.findById(input.campaignId);
+  // Verify campaign exists and is live (supports both _id and slug)
+  const campaignQuery = mongoose.Types.ObjectId.isValid(input.campaignId)
+    ? { $or: [{ _id: input.campaignId }, { slug: input.campaignId }] }
+    : { slug: input.campaignId };
+  const campaign = await Campaign.findOne(campaignQuery);
+
   if (!campaign) {
     throw ApiError.notFound('Campaign not found');
   }
@@ -40,7 +44,7 @@ export const createSubmission = async (
   // Check for duplicate submission (also enforced by unique compound index)
   const existingSubmission = await Submission.findOne({
     creator: input.creatorId,
-    campaign: input.campaignId,
+    campaign: campaign._id,
   });
   if (existingSubmission) {
     throw ApiError.conflict('You have already submitted to this campaign');
@@ -49,7 +53,7 @@ export const createSubmission = async (
   const submission = await Submission.create({
     postLink: input.postLink,
     platform: campaign.platform,
-    campaign: input.campaignId,
+    campaign: campaign._id,
     creator: input.creatorId,
   });
 
@@ -185,20 +189,21 @@ export const getCreatorSubmissions = async (
  * Get all submissions for a campaign (brand view).
  */
 export const getCampaignSubmissions = async (
-  campaignId: string,
+  identifier: string,
   brandId: string
 ): Promise<ISubmission[]> => {
-  // Verify campaign belongs to this brand
-  const campaign = await Campaign.findOne({
-    _id: campaignId,
-    brand: brandId,
-  });
+  // Verify campaign belongs to this brand (supports both _id and slug)
+  const campaignQuery = mongoose.Types.ObjectId.isValid(identifier)
+    ? { $or: [{ _id: identifier, brand: brandId }, { slug: identifier, brand: brandId }] }
+    : { slug: identifier, brand: brandId };
+
+  const campaign = await Campaign.findOne(campaignQuery);
 
   if (!campaign) {
     throw ApiError.notFound('Campaign not found or access denied');
   }
 
-  return Submission.find({ campaign: campaignId })
+  return Submission.find({ campaign: campaign._id })
     .populate('creator', 'name email')
     .sort({ createdAt: -1 });
 };

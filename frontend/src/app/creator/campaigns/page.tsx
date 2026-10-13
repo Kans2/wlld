@@ -128,8 +128,8 @@ export default function BrowseCampaignsPage() {
                   campaign={c}
                   showBudget={true}
                   actionLabel="Submit Post Link"
-                  onAction={() => router.push(`/creator/campaigns/${c._id}`)}
-                  onClick={() => router.push(`/creator/campaigns/${c._id}`)}
+                  onAction={() => router.push(`/creator/campaigns/${c.slug || c._id}`)}
+                  onClick={() => router.push(`/creator/campaigns/${c.slug || c._id}`)}
                 />
               ))}
             </div>

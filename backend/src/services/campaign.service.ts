@@ -1,6 +1,8 @@
+import mongoose from 'mongoose';
 import { Campaign, ICampaign, IMilestone } from '../models/Campaign';
 import { ApiError } from '../utils/apiError';
 import { cacheGet, cacheInvalidate } from '../config/redis';
+import { generateSlug } from '../utils/slugify';
 
 interface CreateCampaignInput {
   name: string;
@@ -41,6 +43,7 @@ export const createCampaign = async (
 
   const campaign = await Campaign.create({
     name: input.name,
+    slug: generateSlug(input.name),
     platform: input.platform,
     totalBudget: input.totalBudget,
     milestones: sortedMilestones,
@@ -66,16 +69,26 @@ export const listLiveCampaigns = async (): Promise<ICampaign[]> => {
 };
 
 /**
- * Get campaign by ID with budget info.
+ * Get campaign by ID or Slug with budget info.
  */
 export const getCampaignById = async (
-  campaignId: string
+  identifier: string
 ): Promise<ICampaign> => {
-  const campaign = await Campaign.findById(campaignId)
+  const query = mongoose.Types.ObjectId.isValid(identifier)
+    ? { $or: [{ _id: identifier }, { slug: identifier }] }
+    : { slug: identifier };
+
+  const campaign = await Campaign.findOne(query)
     .populate('brand', 'name email');
 
   if (!campaign) {
     throw ApiError.notFound('Campaign not found');
+  }
+
+  // If an existing campaign has no slug yet, auto-populate and save it
+  if (!campaign.slug && campaign.name) {
+    campaign.slug = generateSlug(campaign.name);
+    await campaign.save().catch(() => {});
   }
 
   return campaign;

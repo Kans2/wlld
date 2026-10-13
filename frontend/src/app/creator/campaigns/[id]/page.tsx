@@ -42,7 +42,8 @@ function CreatorCampaignDetailContent() {
 
       const found = mySubs.find((s: any) => {
         const cId = typeof s.campaign === 'object' ? s.campaign?._id : s.campaign;
-        return cId === campaignId;
+        const cSlug = typeof s.campaign === 'object' ? s.campaign?.slug : null;
+        return cId === campaignId || cSlug === campaignId || (camp && cId === camp._id);
       });
       setExistingSubmission(found || null);
     } catch (err: unknown) {
@@ -78,7 +79,7 @@ function CreatorCampaignDetailContent() {
     try {
       setSubmitting(true);
       setError(null);
-      await api.createSubmission(postLink.trim(), campaignId);
+      await api.createSubmission(postLink.trim(), campaign?._id || campaignId);
       setSuccess('Post submitted successfully! Now track your views and earnings.');
       await fetchData();
     } catch (err: unknown) {

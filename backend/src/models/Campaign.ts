@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
+import { generateSlug } from '../utils/slugify';
 
 export interface IMilestone {
   views: number;
@@ -7,6 +8,7 @@ export interface IMilestone {
 
 export interface ICampaign extends Document {
   name: string;
+  slug: string;
   platform: 'instagram' | 'youtube';
   totalBudget: number;
   budgetSpent: number;
@@ -42,6 +44,13 @@ const campaignSchema = new Schema<ICampaign>(
       trim: true,
       minlength: [3, 'Campaign name must be at least 3 characters'],
       maxlength: [100, 'Campaign name must be at most 100 characters'],
+    },
+    slug: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+      index: true,
     },
     platform: {
       type: String,
@@ -95,8 +104,11 @@ campaignSchema.virtual('remainingBudget').get(function () {
   return this.totalBudget - this.budgetSpent;
 });
 
-// Pre-save: sort milestones ascending by views
+// Pre-save: auto-generate slug and sort milestones ascending by views
 campaignSchema.pre('save', function () {
+  if (!this.slug && this.name) {
+    this.slug = generateSlug(this.name);
+  }
   if (this.isModified('milestones')) {
     this.milestones.sort((a, b) => a.views - b.views);
   }

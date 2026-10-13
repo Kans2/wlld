@@ -17,6 +17,7 @@ export interface Milestone {
 
 export interface Campaign {
   _id: string;
+  slug?: string;
   name: string;
   platform: 'instagram' | 'youtube';
   totalBudget: number;
