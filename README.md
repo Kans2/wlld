@@ -2,7 +2,7 @@
 
 > A production-grade **creator marketplace & campaign payout tracker** where brands run viral campaigns with milestone-based payout ladders, and creators earn incrementally as views grow, protected by atomic budget caps and anomaly detection.
 
-🚀 **Live App:** [https://wlld-five.vercel.app/](https://wlld-fnutebfxv-kannan-s-projects.vercel.app/)
+🚀 **Live App:** [https://wlld-five.vercel.app/](https://wlld-five.vercel.app/)
 
 [![Live App](https://img.shields.io/badge/Live%20App-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](https://wlld-fnutebfxv-kannan-s-projects.vercel.app/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
